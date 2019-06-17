@@ -39,8 +39,7 @@ flowData <- adjustFlowsVisually(flowData)
 
 numFlowCategories <- length(unique(na.omit(flowData$flowCatNum)))
 
-imagesData <- getImages(flowData, propTestImages = propTestImages, the_photoset_id = "72157681488505313") %>%
-  select(-description)
+imagesData <- getImages(flowData, propTestImages = propTestImages, the_photoset_id = "72157681488505313") 
 
 # remove images with NA values for flow
 imagesData <- imagesData %>% filter(!is.na(flowCatNum))
@@ -59,9 +58,13 @@ sdFlow <- sd(imagesData$flow[!imagesData$testImageTF], na.rm = T)
 imagesData$flowStd <- (imagesData$flow - meanFlow) / sdFlow
 
 save(flowData, imagesData, file = './data/flowImageData.RData')
+#write.csv(imagesData, file = './data/flowImageData.csv')
+##################################################################
 
 #########################################
 # Process images
+load(file = './data/flowImageData.RData')
+
 
 # Sort by flow category and date
 imagesDataSorted <- imagesData %>% arrange( flow, datetaken )

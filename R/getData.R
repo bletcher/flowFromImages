@@ -24,8 +24,19 @@ getImages <- function(flowData, propTestImages = 0.1, the_photoset_id = "7215768
   library(jsonlite)
 
   # get data from images in the album
-  xx1 <- flickr_photosets_getphotos(the_photoset_id)
+  # can grab 500 per page
+  xx1 <- flickr_photosets_getphotos(the_photoset_id, page_number = 1)
+  numImages <- max(xx1$total)
   
+  if(numImages > 500) {
+    numPagesExtraNeedsed <- round((numImages - 500) / 500) 
+    for(i in 2:(2 + numPagesExtraNeedsed)) {
+      xxTMP <- flickr_photosets_getphotos(the_photoset_id, page_number = i)
+      row.names(xxTMP) <- as.numeric(row.names(xxTMP)) + 500 * (i - 1)
+      xx1 <- rbind(xx1,xxTMP)
+    }
+  }
+   
   # combine flow and image data
   xx1$dates <- as.Date(xx1$datetaken) #substr(xx$datetaken, 1, 10)
   #xx <- dplyr::left_join( xx1, flowData )#, by = c("date" = "dates") ) giving an error that I don't know how to fix
